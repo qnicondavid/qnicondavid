@@ -96,7 +96,9 @@ def compute(days):
 
     cur_range = (items[cur_start_idx][0], items[end_idx][0]) if current > 0 else (None, None)
     long_range = (items[long_start][0], items[long_end][0]) if longest > 0 else (None, None)
-    return total, current, longest, cur_range, long_range
+    cur_commits = sum(c for _, c in items[cur_start_idx:end_idx + 1]) if current > 0 else 0
+    long_commits = sum(c for _, c in items[long_start:long_end + 1]) if longest > 0 else 0
+    return total, current, longest, cur_range, long_range, cur_commits, long_commits
 
 
 def fmt_range(start, end):
@@ -128,7 +130,7 @@ def star(cx, cy, ro, ri=None, pts=5):
     return "M" + " L".join(p) + " Z"
 
 
-def render(total, current, longest, cur_date, long_date):
+def render(total, current, longest, cur_date, long_date, cur_commits=0, long_commits=0):
     cy, r = 90, 44
     x1, x2, x3 = 112, 272, 432
 
@@ -150,17 +152,24 @@ def render(total, current, longest, cur_date, long_date):
         return f'<text x="{x}" y="166" text-anchor="middle" class="lbl" fill="{c}">{t}</text>'
 
     def dt(x, t):
-        return f'<text x="{x}" y="184" text-anchor="middle" class="dt">{t}</text>' if t else ''
+        return f'<text x="{x}" y="200" text-anchor="middle" class="dt">{t}</text>' if t else ''
 
-    return f'''<svg viewBox="0 0 544 206" xmlns="http://www.w3.org/2000/svg" fill="none">
+    def cm(x, n, c):
+        if not n:
+            return ''
+        word = 'commit' if n == 1 else 'commits'
+        return f'<text x="{x}" y="184" text-anchor="middle" class="cm" fill="{c}">{n:,} {word}</text>'
+
+    return f'''<svg viewBox="0 0 544 222" xmlns="http://www.w3.org/2000/svg" fill="none">
   <style>
     .num {{ font: 700 30px 'Segoe UI',Ubuntu,Helvetica,Arial,sans-serif; fill:{NUM}; }}
     .lbl {{ font: 600 14px 'Segoe UI',Ubuntu,Helvetica,Arial,sans-serif; }}
     .dt  {{ font: 400 11px 'Segoe UI',Ubuntu,Helvetica,Arial,sans-serif; fill:{DATE}; }}
+    .cm  {{ font: 600 11px 'Segoe UI',Ubuntu,Helvetica,Arial,sans-serif; }}
   </style>
   {total_ring}{num(x1, f"{total:,}")}{lab(x1, "Total Contributions", SLATE)}
-  {cur_ring}{num(x2, current)}{lab(x2, "Current Streak", CLAY)}{dt(x2, cur_date)}
-  {long_ring}{num(x3, longest)}{lab(x3, "Longest Streak", SAGE)}{dt(x3, long_date)}
+  {cur_ring}{num(x2, current)}{lab(x2, "Current Streak", CLAY)}{cm(x2, cur_commits, CLAY)}{dt(x2, cur_date)}
+  {long_ring}{num(x3, longest)}{lab(x3, "Longest Streak", SAGE)}{cm(x3, long_commits, SAGE)}{dt(x3, long_date)}
 </svg>
 '''
 
@@ -168,9 +177,10 @@ def render(total, current, longest, cur_date, long_date):
 def main():
     if not TOKEN:
         raise SystemExit("GH_TOKEN is not set")
-    total, current, longest, cur_range, long_range = compute(fetch_days())
+    total, current, longest, cur_range, long_range, cur_commits, long_commits = compute(fetch_days())
     svg = render(total, current, longest,
-                 fmt_range(*cur_range), fmt_range(*long_range))
+                 fmt_range(*cur_range), fmt_range(*long_range),
+                 cur_commits, long_commits)
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
     with open(OUT, "w", encoding="utf-8") as f:
         f.write(svg)
