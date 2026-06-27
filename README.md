@@ -1,4 +1,7 @@
 <p align="center">
+  <img src="./assets/quote.svg" width="495" alt="Quote" />
+</p>
+<p align="center">
   <img src="./assets/streak-rings.svg" width="495" alt="GitHub streak" />
 </p>
 <p align="center">

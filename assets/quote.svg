@@ -1,0 +1,9 @@
+<svg viewBox="0 0 544 116" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .q { font: italic 400 16px Georgia,'Times New Roman',serif; fill:#8b929c; }
+    .n { font: 600 11px 'Segoe UI',system-ui,sans-serif; fill:#6f8bad; letter-spacing:2.5px; }
+  </style>
+  <text x="24" y="38" class="q">A computer would deserve to be called intelligent</text>
+  <text x="24" y="64" class="q">if it could deceive a human into believing it was human.</text>
+  <text x="520" y="98" text-anchor="end" class="n">ALAN TURING</text>
+</svg>
