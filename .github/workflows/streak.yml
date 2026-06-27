@@ -2,7 +2,7 @@ name: Update streak SVG
 
 on:
   schedule:
-    - cron: "0 0 * * *"   # daily at 00:00 UTC
+    - cron: "0 * * * *"   # hourly, on the hour (UTC)
   workflow_dispatch:        # allow manual runs
   push:
     branches: [main]
@@ -22,7 +22,10 @@ jobs:
 
       - name: Generate streak SVG
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Uses your Personal Access Token (secret GH_PAT) if present so private
+          # contributions are counted; otherwise falls back to the built-in token
+          # (public contributions only).
+          GH_TOKEN: ${{ secrets.GH_PAT || github.token }}
           GH_USER: ${{ github.repository_owner }}
         run: python scripts/generate_streak.py
 
