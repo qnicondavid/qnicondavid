@@ -143,6 +143,17 @@ def flame_icon(cx, cyc, h=30, fill=CLAY):
             f'<path d="{LUCIDE_FLAME}" fill="{fill}"/></g>')
 
 
+CROWN = "M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zM5 18.5h14v2.4H5z"
+
+
+def crown_icon(cx, cyc, h=27, fill=SAGE):
+    sc = h / 24.0
+    tx = cx - 12 * sc
+    ty = cyc - 12 * sc
+    return (f'<g transform="translate({tx:.2f},{ty:.2f}) scale({sc:.3f})">'
+            f'<path d="{CROWN}" fill="{fill}"/></g>')
+
+
 def render(total, current, longest, cur_date, long_date, cur_commits=0, long_commits=0):
     cy, r = 90, 44
     x1, x2, x3 = 112, 272, 432
@@ -154,8 +165,8 @@ def render(total, current, longest, cur_date, long_date, cur_commits=0, long_com
     cur_ring = (f'<path d="{arc(x2, cy, r)}" stroke="{CLAY}" stroke-width="5" '
                 f'stroke-linecap="round"/>{flame_path}')
 
-    long_ring = (f'<path d="{arc(x3, cy, r, gap=30)}" stroke="{SAGE}" stroke-width="5" '
-                 f'stroke-linecap="round"/><path d="{star(x3, cy - r, 8)}" fill="{SAGE}"/>')
+    long_ring = (f'<path d="{arc(x3, cy, r, gap=60)}" stroke="{SAGE}" stroke-width="5" '
+                 f'stroke-linecap="round"/>' + crown_icon(x3, cy - r + 1, 27))
 
     def num(x, v):
         return f'<text x="{x}" y="{cy + 12}" text-anchor="middle" class="num">{v}</text>'
