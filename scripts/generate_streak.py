@@ -130,6 +130,19 @@ def star(cx, cy, ro, ri=None, pts=5):
     return "M" + " L".join(p) + " Z"
 
 
+LUCIDE_FLAME = ("M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 "
+                "2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 "
+                "1-3a2.5 2.5 0 0 0 2.5 2.5z")
+
+
+def flame_icon(cx, cyc, h=30, fill=CLAY):
+    sc = h / 24.0
+    tx = cx - 12 * sc
+    ty = cyc - 12 * sc
+    return (f'<g transform="translate({tx:.2f},{ty:.2f}) scale({sc:.3f})">'
+            f'<path d="{LUCIDE_FLAME}" fill="{fill}"/></g>')
+
+
 def render(total, current, longest, cur_date, long_date, cur_commits=0, long_commits=0):
     cy, r = 90, 44
     x1, x2, x3 = 112, 272, 432
@@ -137,10 +150,9 @@ def render(total, current, longest, cur_date, long_date, cur_commits=0, long_com
     total_ring = (f'<circle cx="{x1}" cy="{cy}" r="{r}" stroke="{SLATE}" stroke-width="5" '
                   f'stroke-linecap="round" stroke-dasharray="0.5 10"/>')
 
-    flame = (f'<path d="M{x2},{cy - r - 7} c-8,8 -11,12 -11,17 a11,11 0 0 0 22,0 '
-             f'c0,-5 -3,-9 -11,-17 z" fill="{CLAY}"/>')
+    flame_path = flame_icon(x2, cy - r + 1, 30)
     cur_ring = (f'<path d="{arc(x2, cy, r)}" stroke="{CLAY}" stroke-width="5" '
-                f'stroke-linecap="round"/>{flame}')
+                f'stroke-linecap="round"/>{flame_path}')
 
     long_ring = (f'<path d="{arc(x3, cy, r, gap=30)}" stroke="{SAGE}" stroke-width="5" '
                  f'stroke-linecap="round"/><path d="{star(x3, cy - r, 8)}" fill="{SAGE}"/>')
