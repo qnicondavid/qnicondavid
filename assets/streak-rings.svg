@@ -4,7 +4,7 @@
     .lbl { font: 600 14px 'Segoe UI',Ubuntu,Helvetica,Arial,sans-serif; }
     .dt  { font: 400 11px 'Segoe UI',Ubuntu,Helvetica,Arial,sans-serif; fill:#8a8f98; }
   </style>
-  <circle cx="112" cy="90" r="44" stroke="#6f8bad" stroke-width="5" stroke-linecap="round" stroke-dasharray="0.5 10"/><text x="112" y="102" text-anchor="middle" class="num">182</text><text x="112" y="166" text-anchor="middle" class="lbl" fill="#6f8bad">Total Contributions</text>
+  <circle cx="112" cy="90" r="44" stroke="#6f8bad" stroke-width="5" stroke-linecap="round" stroke-dasharray="0.5 10"/><text x="112" y="102" text-anchor="middle" class="num">183</text><text x="112" y="166" text-anchor="middle" class="lbl" fill="#6f8bad">Total Contributions</text>
   <path d="M 294.00 51.89 A 44 44 0 1 1 250.00 51.89" stroke="#bf7257" stroke-width="5" stroke-linecap="round"/><path d="M272,39 c-8,8 -11,12 -11,17 a11,11 0 0 0 22,0 c0,-5 -3,-9 -11,-17 z" fill="#bf7257"/><text x="272" y="102" text-anchor="middle" class="num">3</text><text x="272" y="166" text-anchor="middle" class="lbl" fill="#bf7257">Current Streak</text><text x="272" y="184" text-anchor="middle" class="dt">Jun 25 – Jun 27</text>
   <path d="M 443.39 47.50 A 44 44 0 1 1 420.61 47.50" stroke="#7e9c86" stroke-width="5" stroke-linecap="round"/><path d="M432.00,38.00 L434.12,43.09 L439.61,43.53 L435.42,47.11 L436.70,52.47 L432.00,49.60 L427.30,52.47 L428.58,47.11 L424.39,43.53 L429.88,43.09 Z" fill="#7e9c86"/><text x="432" y="102" text-anchor="middle" class="num">4</text><text x="432" y="166" text-anchor="middle" class="lbl" fill="#7e9c86">Longest Streak</text><text x="432" y="184" text-anchor="middle" class="dt">Jan 12 – Jan 15</text>
 </svg>
