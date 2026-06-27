@@ -158,8 +158,10 @@ def render(total, current, longest, cur_date, long_date, cur_commits=0, long_com
     cy, r = 90, 44
     x1, x2, x3 = 112, 272, 432
 
+    circ = 2 * math.pi * r
+    seg = circ / 26  # 26 evenly spaced dots so start/end don't overlap
     total_ring = (f'<circle cx="{x1}" cy="{cy}" r="{r}" stroke="{SLATE}" stroke-width="5" '
-                  f'stroke-linecap="round" stroke-dasharray="0.5 10"/>')
+                  f'stroke-linecap="round" stroke-dasharray="0.01 {seg - 0.01:.4f}"/>')
 
     flame_path = flame_icon(x2, cy - r + 1, 30)
     cur_ring = (f'<path d="{arc(x2, cy, r)}" stroke="{CLAY}" stroke-width="5" '
