@@ -103,10 +103,8 @@ def render(s):
         (IC_FOLDER, SLATE, f'Contributed to ({s["year"]})',  s["contrib"]),
     ]
     baselines = [28, 64, 100, 136, 172]
-    dividers = [46, 82, 118, 154]
 
-    parts = [f'<line x1="6" y1="{y}" x2="474" y2="{y}" stroke="{LINE}" '
-             f'stroke-opacity="0.16"/>' for y in dividers]
+    parts = []
     for (ic, color, label, value), yb in zip(rows, baselines):
         parts.append(icon(ic, 6, yb - 14, color))
         parts.append(f'<text x="34" y="{yb}" class="lbl" fill="{color}">{label}</text>')
