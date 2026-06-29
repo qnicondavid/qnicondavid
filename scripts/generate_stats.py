@@ -103,8 +103,10 @@ def render(s):
         (IC_FOLDER, SLATE, f'Contributed to ({s["year"]})',  s["contrib"]),
     ]
     baselines = [28, 64, 100, 136, 172]
+    dividers = [43, 79, 115, 151]   # optical mid-gap, nudged up off the value numbers
 
-    parts = []
+    parts = [f'<line x1="8" y1="{y}" x2="472" y2="{y}" stroke="{LINE}" '
+             f'stroke-opacity="0.08"/>' for y in dividers]
     for (ic, color, label, value), yb in zip(rows, baselines):
         parts.append(icon(ic, 6, yb - 14, color))
         parts.append(f'<text x="34" y="{yb}" class="lbl" fill="{color}">{label}</text>')
