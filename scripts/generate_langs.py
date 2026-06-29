@@ -92,10 +92,10 @@ def build_rows(totals, colors):
 def render(rows):
     bar_h = 11
     stat_rows = (28, 64, 100, 136, 172)         # baselines of the five stats-card rows
-    bar_y = round(stat_rows[0] - bar_h / 2)     # bar occupies the top row, like the stats card
+    bar_y = 17                                   # bar centred within the top row band (matches Stars row)
     leg_rows = (len(rows) + 1) // 2
     leg_base = stat_rows[1:1 + leg_rows]         # legend rows align to the rows below the bar
-    cols = ((13, 24, 196), (211, 222, 392))     # (dot cx, name x, pct x[right-aligned]) per column
+    cols = ((13, 27, 172), (228, 242, 392))     # (dot cx, name x, pct x[right-aligned]); wider centre gutter
 
     segs, x = [], 8.0
     for _, pct, color in rows:
