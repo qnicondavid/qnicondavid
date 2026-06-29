@@ -5,6 +5,5 @@
   <img src="./assets/streak-rings.svg" width="495" alt="GitHub streak" />
 </p>
 <p align="center">
-  <img height="165em" src="./assets/stats-card.svg" alt="GitHub stats" />
-  <img height="165em" src="./assets/langs-card.svg" alt="Top languages" />
+  <img src="./assets/cards.svg" width="100%" alt="GitHub stats and top languages" />
 </p>

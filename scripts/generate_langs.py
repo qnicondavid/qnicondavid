@@ -90,18 +90,25 @@ def build_rows(totals, colors):
 
 # ---- drawing ------------------------------------------------------------
 def render(rows):
+    bar_h = 11
+    top, bottom = 28, 172                       # share top/bottom edges with the stats card
+    leg_rows = (len(rows) + 1) // 2
+    bar_y = round(top - bar_h / 2)              # bar centred on the top row line, kept at the top
+    step = (bottom - top) / leg_rows
+    leg_base = [round(top + (k + 1) * step) for k in range(leg_rows)]  # legend evenly spaced to the bottom
+
     segs, x = [], 8.0
     for _, pct, color in rows:
         w = 384 * pct / 100
-        segs.append(f'<rect x="{x:.2f}" y="22" width="{w + 0.6:.2f}" height="11" fill="{color}"/>')
+        segs.append(f'<rect x="{x:.2f}" y="{bar_y}" width="{w + 0.6:.2f}" height="{bar_h}" fill="{color}"/>')
         x += w
-    bar = ('<clipPath id="bc"><rect x="8" y="22" width="384" height="11" rx="5.5"/></clipPath>'
+    bar = (f'<clipPath id="bc"><rect x="8" y="{bar_y}" width="384" height="{bar_h}" rx="5.5"/></clipPath>'
            f'<g clip-path="url(#bc)">{"".join(segs)}</g>')
 
     leg = []
     for i, (name, pct, color) in enumerate(rows):
         dx = 210 if i % 2 else 12
-        ty = 70 + (i // 2) * 38
+        ty = leg_base[i // 2]
         leg.append(f'<circle cx="{dx}" cy="{ty - 4}" r="5" fill="{color}"/>')
         leg.append(f'<text x="{dx + 14}" y="{ty}" class="ln">{html.escape(name)} {round(pct)}%</text>')
 
