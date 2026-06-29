@@ -15,8 +15,10 @@ LANGS = os.path.join(ASSETS, "langs-card.svg")
 OUT = os.path.join(ASSETS, "cards.svg")
 
 H = 188            # both cards share this height
-LANG_X = 520       # left edge of the languages card (stats is 480 wide -> ~40px gap)
-LANGS_W = 400
+STATS_W = 480      # stats card width
+GAP = 20           # gap between the two cards
+LANGS_W = 480      # languages card now matches the stats width -> even 50/50 split
+LANG_X = STATS_W + GAP
 TOTAL_W = LANG_X + LANGS_W
 
 

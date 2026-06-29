@@ -90,30 +90,29 @@ def build_rows(totals, colors):
 
 # ---- drawing ------------------------------------------------------------
 def render(rows):
-    bar_h = 11
+    bar_w, bar_h, bar_y = 464, 11, 17           # bar centred within the top row band (matches Stars row)
     stat_rows = (28, 64, 100, 136, 172)         # baselines of the five stats-card rows
-    bar_y = 17                                   # bar centred within the top row band (matches Stars row)
     leg_rows = (len(rows) + 1) // 2
     leg_base = stat_rows[1:1 + leg_rows]         # legend rows align to the rows below the bar
-    cols = ((13, 27, 172), (228, 242, 392))     # (dot cx, name x, pct x[right-aligned]); wider centre gutter
+    cols = ((13, 28, 212), (268, 282, 472))     # (dot cx, name x, pct x[right-aligned]); two even columns
 
     segs, x = [], 8.0
     for _, pct, color in rows:
-        w = 384 * pct / 100
+        w = bar_w * pct / 100
         segs.append(f'<rect x="{x:.2f}" y="{bar_y}" width="{w + 0.6:.2f}" height="{bar_h}" fill="{color}"/>')
         x += w
-    bar = (f'<clipPath id="bc"><rect x="8" y="{bar_y}" width="384" height="{bar_h}" rx="5.5"/></clipPath>'
+    bar = (f'<clipPath id="bc"><rect x="8" y="{bar_y}" width="{bar_w}" height="{bar_h}" rx="5.5"/></clipPath>'
            f'<g clip-path="url(#bc)">{"".join(segs)}</g>')
 
     leg = []
     for i, (name, pct, color) in enumerate(rows):
         dot_x, name_x, pct_x = cols[i % 2]
         ty = leg_base[i // 2]
-        leg.append(f'<circle cx="{dot_x}" cy="{ty - 4}" r="5" fill="{color}"/>')
+        leg.append(f'<circle cx="{dot_x}" cy="{ty - 5}" r="5" fill="{color}"/>')
         leg.append(f'<text x="{name_x}" y="{ty}" class="ln">{html.escape(name)}</text>')
         leg.append(f'<text x="{pct_x}" y="{ty}" text-anchor="end" class="lp">{round(pct)}%</text>')
 
-    return f'''<svg viewBox="0 0 400 188" xmlns="http://www.w3.org/2000/svg" fill="none">
+    return f'''<svg viewBox="0 0 480 188" xmlns="http://www.w3.org/2000/svg" fill="none">
   <style>
     .ln {{ font: 600 14px 'Segoe UI',Ubuntu,Helvetica,Arial,sans-serif; fill:{NAME}; }}
     .lp {{ font: 700 14px 'Segoe UI',Ubuntu,Helvetica,Arial,sans-serif; fill:#7d8590; }}
