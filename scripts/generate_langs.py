@@ -22,7 +22,7 @@ API = "https://api.github.com/graphql"
 NEUTRAL = "#8a8f98"   # mute target + fallback for languages with no color
 NAME    = "#8a8f98"   # legend text
 OTHER   = "#6e7681"   # 'Other' segment / legend dot
-TOP_N   = 5           # named languages before the rest are grouped as 'Other'
+TOP_N   = 7           # named languages before the rest are grouped as 'Other' (-> up to 8 rows)
 
 
 # ---- data ---------------------------------------------------------------
@@ -91,11 +91,11 @@ def build_rows(totals, colors):
 # ---- drawing ------------------------------------------------------------
 def render(rows):
     bar_h = 11
-    top, bottom = 28, 172                       # share top/bottom edges with the stats card
+    stat_rows = (28, 64, 100, 136, 172)         # baselines of the five stats-card rows
+    bar_y = round(stat_rows[0] - bar_h / 2)     # bar occupies the top row, like the stats card
     leg_rows = (len(rows) + 1) // 2
-    bar_y = round(top - bar_h / 2)              # bar centred on the top row line, kept at the top
-    step = (bottom - top) / leg_rows
-    leg_base = [round(top + (k + 1) * step) for k in range(leg_rows)]  # legend evenly spaced to the bottom
+    leg_base = stat_rows[1:1 + leg_rows]         # legend rows align to the rows below the bar
+    cols = ((13, 24, 196), (211, 222, 392))     # (dot cx, name x, pct x[right-aligned]) per column
 
     segs, x = [], 8.0
     for _, pct, color in rows:
@@ -107,14 +107,16 @@ def render(rows):
 
     leg = []
     for i, (name, pct, color) in enumerate(rows):
-        dx = 210 if i % 2 else 12
+        dot_x, name_x, pct_x = cols[i % 2]
         ty = leg_base[i // 2]
-        leg.append(f'<circle cx="{dx}" cy="{ty - 4}" r="5" fill="{color}"/>')
-        leg.append(f'<text x="{dx + 14}" y="{ty}" class="ln">{html.escape(name)} {round(pct)}%</text>')
+        leg.append(f'<circle cx="{dot_x}" cy="{ty - 4}" r="5" fill="{color}"/>')
+        leg.append(f'<text x="{name_x}" y="{ty}" class="ln">{html.escape(name)}</text>')
+        leg.append(f'<text x="{pct_x}" y="{ty}" text-anchor="end" class="lp">{round(pct)}%</text>')
 
     return f'''<svg viewBox="0 0 400 188" xmlns="http://www.w3.org/2000/svg" fill="none">
   <style>
-    .ln {{ font: 600 13px 'Segoe UI',Ubuntu,Helvetica,Arial,sans-serif; fill:{NAME}; }}
+    .ln {{ font: 600 14px 'Segoe UI',Ubuntu,Helvetica,Arial,sans-serif; fill:{NAME}; }}
+    .lp {{ font: 700 14px 'Segoe UI',Ubuntu,Helvetica,Arial,sans-serif; fill:#7d8590; }}
   </style>
   {bar}
   {"".join(leg)}
