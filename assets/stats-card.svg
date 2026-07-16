@@ -12,7 +12,7 @@
   <text x="474" y="28" text-anchor="end" class="val">13</text>
   <g transform="translate(6,50) scale(0.75)" stroke="#6f8bad" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><line x1="3" y1="12" x2="9" y2="12"/><line x1="15" y1="12" x2="21" y2="12"/></g>
   <text x="34" y="64" class="lbl" fill="#6f8bad">Total Commits (2026)</text>
-  <text x="474" y="64" text-anchor="end" class="val">430</text>
+  <text x="474" y="64" text-anchor="end" class="val">442</text>
   <g transform="translate(6,86) scale(0.75)" stroke="#7e9c86" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M13 6h3a2 2 0 0 1 2 2v7"/><line x1="6" y1="9" x2="6" y2="21"/></g>
   <text x="34" y="100" class="lbl" fill="#7e9c86">Total PRs</text>
   <text x="474" y="100" text-anchor="end" class="val">2</text>
@@ -21,5 +21,5 @@
   <text x="474" y="136" text-anchor="end" class="val">4</text>
   <g transform="translate(6,158) scale(0.75)" stroke="#6f8bad" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></g>
   <text x="34" y="172" class="lbl" fill="#6f8bad">Contributed to (2026)</text>
-  <text x="474" y="172" text-anchor="end" class="val">13</text>
+  <text x="474" y="172" text-anchor="end" class="val">14</text>
 </svg>
