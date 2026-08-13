@@ -171,7 +171,7 @@ def render(total, current, longest, cur_date, long_date, cur_commits=0, long_com
                  f'stroke-linecap="round"/>' + crown_icon(x3, cy - r + 1, 27))
 
     def num(x, v):
-        return f'<text x="{x}" y="{cy + 12}" text-anchor="middle" class="num">{v}</text>'
+        return f'<text x="{x}" y="{cy + 12}" text-anchor="middle" dominant-baseline="middle" class="num">{v}</text>'
 
     def lab(x, t, c):
         return f'<text x="{x}" y="166" text-anchor="middle" class="lbl" fill="{c}">{t}</text>'
