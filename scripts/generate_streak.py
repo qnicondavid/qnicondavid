@@ -27,6 +27,23 @@ SAGE  = "#7e9c86"   # longest - near-solid ring + star (record)
 NUM   = "#7d8590"   # numbers (legible on light + dark)
 DATE  = "#8a8f98"   # date text
 
+# Vertical centring of the ring numbers.
+#
+# dominant-baseline="middle" is the obvious choice and it is wrong twice over:
+#   1. "middle" aligns the *x-height* midpoint. Digits have no x-height - they are
+#      cap-height tall - so the number ends up ~(cap - x)/2 = 0.1em too high
+#      (3px at 30px, clearly visible inside an 88px ring).
+#   2. It is not supported by every SVG rasteriser (librsvg, resvg, several
+#      converters and preview panes ignore it), and there the text falls back to
+#      sitting *on* the baseline - 10px too high.
+# Dropping the baseline by half a cap-height with a plain dy= centres the digits
+# and works in every renderer.
+#
+# cap-height of the .num font stack: Segoe UI 0.700em, Ubuntu 0.693em,
+# Helvetica/Arial 0.716em, DejaVu Sans 0.729em -> half is 0.347..0.365em.
+# 0.35em is exact for Segoe UI and off by at most 0.45px for the fallbacks.
+CAP_HALF_EM = 0.35
+
 
 # ---- data ---------------------------------------------------------------
 def gql(query, variables):
@@ -171,7 +188,8 @@ def render(total, current, longest, cur_date, long_date, cur_commits=0, long_com
                  f'stroke-linecap="round"/>' + crown_icon(x3, cy - r + 1, 27))
 
     def num(x, v):
-        return f'<text x="{x}" y="{cy}" text-anchor="middle" dominant-baseline="middle" class="num">{v}</text>'
+        return (f'<text x="{x}" y="{cy}" dy="{CAP_HALF_EM}em" text-anchor="middle" '
+                f'class="num">{v}</text>')
 
     def lab(x, t, c):
         return f'<text x="{x}" y="166" text-anchor="middle" class="lbl" fill="{c}">{t}</text>'
