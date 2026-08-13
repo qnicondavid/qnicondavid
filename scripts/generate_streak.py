@@ -183,7 +183,7 @@ def render(total, current, longest, cur_date, long_date, cur_commits=0, long_com
         if not n:
             return ''
         word = 'commit' if n == 1 else 'commits'
-        return f'<text x="{x}" y="184" text-anchor="middle" class="cm" fill="{c}">{n:,} {word}</text>'
+        return f'<text x="{x}" y="184" text-anchor="middle" class="cm" fill="{c}">{n} {word}</text>'
 
     return f'''<svg viewBox="0 0 544 222" xmlns="http://www.w3.org/2000/svg" fill="none">
   <style>
@@ -192,7 +192,7 @@ def render(total, current, longest, cur_date, long_date, cur_commits=0, long_com
     .dt  {{ font: 400 11px 'Segoe UI',Ubuntu,Helvetica,Arial,sans-serif; fill:{DATE}; }}
     .cm  {{ font: 600 11px 'Segoe UI',Ubuntu,Helvetica,Arial,sans-serif; }}
   </style>
-  {total_ring}{num(x1, f"{total:,}")}{lab(x1, "Total Contributions", SLATE)}
+  {total_ring}{num(x1, f"{total}")}{lab(x1, "Total Contributions", SLATE)}
   {cur_ring}{num(x2, current)}{lab(x2, "Current Streak", CLAY)}{cm(x2, cur_commits, CLAY)}{dt(x2, cur_date)}
   {long_ring}{num(x3, longest)}{lab(x3, "Longest Streak", SAGE)}{cm(x3, long_commits, SAGE)}{dt(x3, long_date)}
 </svg>
