@@ -187,7 +187,7 @@ def render(total, current, longest, cur_date, long_date, cur_commits=0, long_com
 
     return f'''<svg viewBox="0 0 544 222" xmlns="http://www.w3.org/2000/svg" fill="none">
   <style>
-    .num {{ font: 700 30px 'Courier New','Courier','Consolas',monospace; fill:{NUM}; }}
+    .num {{ font: 700 30px 'Segoe UI',Ubuntu,Helvetica,Arial,sans-serif; fill:{NUM}; }}
     .lbl {{ font: 600 14px 'Segoe UI',Ubuntu,Helvetica,Arial,sans-serif; }}
     .dt  {{ font: 400 11px 'Segoe UI',Ubuntu,Helvetica,Arial,sans-serif; fill:{DATE}; }}
     .cm  {{ font: 600 11px 'Segoe UI',Ubuntu,Helvetica,Arial,sans-serif; }}
