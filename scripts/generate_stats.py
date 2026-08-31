@@ -13,6 +13,7 @@ import os
 import json
 import datetime
 import urllib.request
+import urllib.error
 
 USER = os.environ.get("GH_USER", "qnicondavid")
 TOKEN = os.environ.get("GH_TOKEN")
@@ -50,8 +51,18 @@ def gql(query, variables):
         API, data=payload,
         headers={"Authorization": f"bearer {TOKEN}",
                  "Content-Type": "application/json", "User-Agent": USER})
-    with urllib.request.urlopen(req) as resp:
-        body = json.load(resp)
+    try:
+        with urllib.request.urlopen(req) as resp:
+            body = json.load(resp)
+    except urllib.error.HTTPError as e:
+        if e.code in (401, 403):
+            raise SystemExit(
+                f"GitHub refused the token (HTTP {e.code}). If the GH_PAT secret "
+                f"is set it is expired, revoked, or missing the scopes needed to "
+                f"read contributions. Rotate it under Settings > Secrets and "
+                f"variables > Actions, or delete the secret to fall back to the "
+                f"built-in GITHUB_TOKEN (public contributions only).") from None
+        raise
     if "errors" in body:
         raise RuntimeError(json.dumps(body["errors"]))
     return body["data"]
@@ -61,12 +72,13 @@ def fetch_stats():
     now = datetime.datetime.now(datetime.timezone.utc)
     frm = now.replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
     q = """
-    query($l:String!,$from:DateTime!,$to:DateTime!){
+    query($l:String!,$from:DateTime!,$to:DateTime!,$after:String){
       user(login:$l){
         pullRequests{ totalCount }
         issues{ totalCount }
-        repositories(first:100, ownerAffiliations:OWNER, isFork:false){
+        repositories(first:100, after:$after, ownerAffiliations:OWNER, isFork:false){
           nodes{ stargazerCount }
+          pageInfo{ hasNextPage endCursor }
         }
         contributionsCollection(from:$from,to:$to){
           totalCommitContributions
@@ -74,11 +86,19 @@ def fetch_stats():
         }
       }
     }"""
-    d = gql(q, {"l": USER, "from": frm.isoformat(), "to": now.isoformat()})["user"]
+    stars, after, d = 0, None, None
+    while True:                 # paginate; past 100 repos the count silently truncated
+        d = gql(q, {"l": USER, "from": frm.isoformat(),
+                    "to": now.isoformat(), "after": after})["user"]
+        page = d["repositories"]
+        stars += sum(n["stargazerCount"] for n in page["nodes"])
+        if not page["pageInfo"]["hasNextPage"]:
+            break
+        after = page["pageInfo"]["endCursor"]
     cc = d["contributionsCollection"]
     return {
         "year": now.year,
-        "stars": sum(n["stargazerCount"] for n in d["repositories"]["nodes"]),
+        "stars": stars,
         "commits": cc["totalCommitContributions"],
         "prs": d["pullRequests"]["totalCount"],
         "issues": d["issues"]["totalCount"],

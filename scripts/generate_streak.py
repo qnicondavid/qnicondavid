@@ -14,6 +14,7 @@ import json
 import math
 import datetime
 import urllib.request
+import urllib.error
 
 USER = os.environ.get("GH_USER", "qnicondavid")
 TOKEN = os.environ.get("GH_TOKEN")
@@ -52,8 +53,18 @@ def gql(query, variables):
         API, data=payload,
         headers={"Authorization": f"bearer {TOKEN}",
                  "Content-Type": "application/json", "User-Agent": USER})
-    with urllib.request.urlopen(req) as resp:
-        body = json.load(resp)
+    try:
+        with urllib.request.urlopen(req) as resp:
+            body = json.load(resp)
+    except urllib.error.HTTPError as e:
+        if e.code in (401, 403):
+            raise SystemExit(
+                f"GitHub refused the token (HTTP {e.code}). If the GH_PAT secret "
+                f"is set it is expired, revoked, or missing the scopes needed to "
+                f"read contributions. Rotate it under Settings > Secrets and "
+                f"variables > Actions, or delete the secret to fall back to the "
+                f"built-in GITHUB_TOKEN (public contributions only).") from None
+        raise
     if "errors" in body:
         raise RuntimeError(json.dumps(body["errors"]))
     return body["data"]
@@ -62,7 +73,7 @@ def gql(query, variables):
 def fetch_days():
     created = gql("query($l:String!){user(login:$l){createdAt}}", {"l": USER})
     start_year = int(created["user"]["createdAt"][:4])
-    this_year = datetime.datetime.utcnow().year
+    this_year = datetime.datetime.now(datetime.timezone.utc).year
     q = """
     query($l:String!,$from:DateTime!,$to:DateTime!){
       user(login:$l){ contributionsCollection(from:$from,to:$to){

@@ -2,13 +2,19 @@ name: Update streak SVG
 
 on:
   schedule:
-    - cron: "0 * * * *"   # hourly, on the hour (UTC)
+    # Once a day at 21:40 UTC (~23:40 Europe/Paris), so the cards are built
+    # near the end of the local day and reflect it in full. Deliberately off
+    # the hour: GitHub delays scheduled runs most at :00.
+    - cron: "40 21 * * *"
   workflow_dispatch:        # allow manual runs
-  push:
-    branches: [main]
 
 permissions:
   contents: write
+
+# Never let two runs push to main at the same time.
+concurrency:
+  group: update-profile-svgs
+  cancel-in-progress: false
 
 jobs:
   update:
@@ -18,13 +24,15 @@ jobs:
 
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.x"
+          # Pinned: "3.x" can resolve to a pre-release interpreter.
+          python-version: "3.13"
 
       - name: Generate streak SVG
         env:
           # Uses your Personal Access Token (secret GH_PAT) if present so private
           # contributions are counted; otherwise falls back to the built-in token
-          # (public contributions only).
+          # (public contributions only). NOTE: if GH_PAT exists but is expired,
+          # this does NOT fall back - the scripts now say so explicitly.
           GH_TOKEN: ${{ secrets.GH_PAT || github.token }}
           GH_USER: ${{ github.repository_owner }}
         run: python scripts/generate_streak.py
@@ -44,10 +52,36 @@ jobs:
       - name: Combine cards
         run: python scripts/generate_cards.py
 
+      - name: Keep the schedule alive
+        # GitHub disables scheduled workflows in public repos after 60 days with
+        # no repository activity. If nothing has landed on main in 50 days, touch
+        # a dated marker so this run has something to commit.
+        run: |
+          age=$(( ( $(date +%s) - $(git log -1 --format=%ct) ) / 86400 ))
+          echo "newest commit on main is ${age} day(s) old"
+          if [ "$age" -ge 50 ]; then
+            date -u +%Y-%m-%d > .github/keepalive
+            echo "wrote .github/keepalive"
+          fi
+
       - name: Commit if changed
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add assets/streak-rings.svg assets/stats-card.svg assets/langs-card.svg assets/cards.svg
-          git diff --quiet --staged || git commit -m "chore: update profile svgs"
-          git push
+          git add assets/streak-rings.svg assets/stats-card.svg \
+                  assets/langs-card.svg assets/cards.svg
+          [ -f .github/keepalive ] && git add .github/keepalive || true
+          if git diff --quiet --staged; then
+            echo "nothing changed"
+            exit 0
+          fi
+          git commit -m "chore: update profile svgs"
+          for attempt in 1 2 3; do
+            if git push; then
+              exit 0
+            fi
+            echo "push rejected (attempt ${attempt}); refreshing from origin"
+            git pull --rebase --autostash origin main || exit 1
+          done
+          echo "push still failing after 3 attempts"
+          exit 1

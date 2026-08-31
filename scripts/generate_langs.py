@@ -13,6 +13,7 @@ import os
 import json
 import html
 import urllib.request
+import urllib.error
 
 USER = os.environ.get("GH_USER", "qnicondavid")
 TOKEN = os.environ.get("GH_TOKEN")
@@ -32,8 +33,18 @@ def gql(query, variables):
         API, data=payload,
         headers={"Authorization": f"bearer {TOKEN}",
                  "Content-Type": "application/json", "User-Agent": USER})
-    with urllib.request.urlopen(req) as resp:
-        body = json.load(resp)
+    try:
+        with urllib.request.urlopen(req) as resp:
+            body = json.load(resp)
+    except urllib.error.HTTPError as e:
+        if e.code in (401, 403):
+            raise SystemExit(
+                f"GitHub refused the token (HTTP {e.code}). If the GH_PAT secret "
+                f"is set it is expired, revoked, or missing the scopes needed to "
+                f"read contributions. Rotate it under Settings > Secrets and "
+                f"variables > Actions, or delete the secret to fall back to the "
+                f"built-in GITHUB_TOKEN (public contributions only).") from None
+        raise
     if "errors" in body:
         raise RuntimeError(json.dumps(body["errors"]))
     return body["data"]
@@ -41,24 +52,29 @@ def gql(query, variables):
 
 def fetch_langs():
     q = """
-    query($l:String!){
+    query($l:String!,$after:String){
       user(login:$l){
-        repositories(first:100, ownerAffiliations:OWNER, isFork:false){
+        repositories(first:100, after:$after, ownerAffiliations:OWNER, isFork:false){
           nodes{
             languages(first:20, orderBy:{field:SIZE, direction:DESC}){
               edges{ size node{ name color } }
             }
           }
+          pageInfo{ hasNextPage endCursor }
         }
       }
     }"""
-    nodes = gql(q, {"l": USER})["user"]["repositories"]["nodes"]
-    totals, colors = {}, {}
-    for repo in nodes:
-        for e in repo["languages"]["edges"]:
-            n = e["node"]["name"]
-            totals[n] = totals.get(n, 0) + e["size"]
-            colors[n] = e["node"]["color"]
+    totals, colors, after = {}, {}, None
+    while True:                 # paginate; past 100 repos the totals silently truncated
+        page = gql(q, {"l": USER, "after": after})["user"]["repositories"]
+        for repo in page["nodes"]:
+            for e in repo["languages"]["edges"]:
+                n = e["node"]["name"]
+                totals[n] = totals.get(n, 0) + e["size"]
+                colors[n] = e["node"]["color"]
+        if not page["pageInfo"]["hasNextPage"]:
+            break
+        after = page["pageInfo"]["endCursor"]
     return totals, colors
 
 
